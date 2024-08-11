@@ -46,9 +46,9 @@ class CensusData(BaseModel):
         }
 
 # Load the model, encoder, and label binarizer
-model = joblib.load(os.path.join(os.path.dirname(__file__), "c3-starter-code/starter/ml/model/random_forest_model.joblib"))
-encoder = joblib.load(os.path.join(os.path.dirname(__file__), "c3-starter-code/starter/ml/model/encoder.joblib"))
-lb = joblib.load(os.path.join(os.path.dirname(__file__), "c3-starter-code/starter/ml/model/lb.joblib"))
+model = joblib.load(os.path.join(os.path.dirname(__file__), "starter/ml/model/random_forest_model.joblib"))
+encoder = joblib.load(os.path.join(os.path.dirname(__file__), "starter/ml/model/encoder.joblib"))
+lb = joblib.load(os.path.join(os.path.dirname(__file__), "starter/ml/model/lb.joblib"))
 
 @app.get("/")
 def read_root():

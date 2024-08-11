@@ -1,0 +1,16 @@
+name: fastapi_venv
+channels:
+  - conda-forge
+dependencies:
+  - python=3.8
+  - pip
+  - pip:
+    - scikit-learn
+    - pandas
+    - numpy
+    - pytest
+    - jupyter
+    - jupyterlab
+    - fastapi[standard]
+    - uvicorn[standard]
+    - dvc

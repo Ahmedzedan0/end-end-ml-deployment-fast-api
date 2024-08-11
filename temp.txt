@@ -1,0 +1,1 @@
+dvc add ../c3-starter-code/starter/data/census.csv

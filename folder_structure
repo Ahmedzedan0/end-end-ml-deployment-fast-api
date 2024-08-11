@@ -1,0 +1,42 @@
+```
+└── 📁end-end-ml-deployment-fast-api
+    └── 📁.dvc
+        └── .gitignore
+        └── 📁cache
+            └── 📁files
+                └── 📁md5
+                    └── 📁14
+                        └── 5de00f6e6053d3f7044628f9a5b5ff
+        └── config
+        └── 📁tmp
+            └── btime
+            └── lock
+            └── rwlock
+            └── rwlock.lock
+    └── .dvcignore
+    └── README.md
+    └── 📁__pycache__
+        └── main.cpython-39.pyc
+    └── 📁data
+        └── .gitignore
+        └── census.csv
+        └── census.csv.dvc
+    └── environment.yml
+    └── main.py
+    └── 📁model
+        └── .gitignore
+    └── requirements
+    └── sanitycheck.py
+    └── 📁screenshots
+        └── .gitignore
+    └── setup.py
+    └── 📁starter
+        └── __init__.py
+        └── 📁ml
+            └── __init__.py
+            └── data.py
+            └── model.py
+            └── test_model.py
+        └── train_model.py
+    └── test_main.py
+```

@@ -1,11 +1,17 @@
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 from typing import List, Optional
 import joblib
-import os
+import pandas as pd
 import numpy as np
-from starter.ml.data import process_data
-from starter.ml.model import inference
+
+if __name__ == "__main__":
+    from starter.ml.data import process_data
+    from starter.ml.model import inference
 
 app = FastAPI()
 
@@ -46,9 +52,9 @@ class CensusData(BaseModel):
         }
 
 # Load the model, encoder, and label binarizer
-model = joblib.load(os.path.join(os.path.dirname(__file__), "starter/ml/model/random_forest_model.joblib"))
-encoder = joblib.load(os.path.join(os.path.dirname(__file__), "starter/ml/model/encoder.joblib"))
-lb = joblib.load(os.path.join(os.path.dirname(__file__), "starter/ml/model/lb.joblib"))
+model = joblib.load(os.path.join(os.path.dirname(__file__), "model/random_forest_model.joblib"))
+encoder = joblib.load(os.path.join(os.path.dirname(__file__), "model/encoder.joblib"))
+lb = joblib.load(os.path.join(os.path.dirname(__file__), "model/lb.joblib"))
 
 @app.get("/")
 def read_root():

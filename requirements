@@ -1,0 +1,9 @@
+scikit-learn
+pandas
+numpy
+pytest
+jupyter
+jupyterlab
+fastapi[standard]
+uvicorn[standard]
+dvc

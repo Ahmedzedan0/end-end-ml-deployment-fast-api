@@ -1,13 +1,21 @@
+"""
+Script Name: main.py
+Purpose: FastAPI application for predicting census income based on demographic data.
+Author: Zidane
+Date: 14-08-2024
+"""
+
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List
 import joblib
 import pandas as pd
 import numpy as np
+
+# Add the current directory to sys.path for module resolution
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 if __name__ == "__main__":
     from starter.ml.data import process_data
@@ -16,6 +24,25 @@ if __name__ == "__main__":
 app = FastAPI()
 
 class CensusData(BaseModel):
+    """
+    Pydantic model for representing census data used in predictions.
+
+    Attributes:
+        age (int): The age of the individual.
+        workclass (str): The workclass of the individual.
+        fnlwgt (int): Final weight, a calculated field.
+        education (str): The education level of the individual.
+        education_num (int): The number of years of education, alias to 'education-num'.
+        marital_status (str): The marital status of the individual.
+        occupation (str): The occupation of the individual.
+        relationship (str): The relationship status of the individual.
+        race (str): The race of the individual.
+        sex (str): The sex of the individual.
+        capital_gain (int): The capital gain of the individual.
+        capital_loss (int): The capital loss of the individual.
+        hours_per_week (int): The number of hours the individual works per week.
+        native_country (str): The native country of the individual.
+    """
     age: int
     workclass: str = Field(..., alias="workclass")
     fnlwgt: int
@@ -32,6 +59,9 @@ class CensusData(BaseModel):
     native_country: str = Field(..., alias="native-country")
 
     class Config:
+        """
+        Configuration class for the CensusData model, providing an example schema.
+        """
         schema_extra = {
             "example": {
                 "age": 39,
@@ -58,10 +88,25 @@ lb = joblib.load(os.path.join(os.path.dirname(__file__), "model/lb.joblib"))
 
 @app.get("/")
 def read_root():
+    """
+    Root endpoint that returns a welcome message.
+
+    Returns:
+        dict: A welcome message.
+    """
     return {"message": "Welcome to the Census Income Prediction API"}
 
 @app.post("/predict/")
 def predict(data: List[CensusData]):
+    """
+    Prediction endpoint that takes in census data and returns income predictions.
+
+    Args:
+        data (List[CensusData]): A list of census data records.
+
+    Returns:
+        dict: A dictionary containing the list of predictions.
+    """
     # Convert input data to DataFrame
     input_data = [d.dict(by_alias=True) for d in data]
     df = pd.DataFrame(input_data)

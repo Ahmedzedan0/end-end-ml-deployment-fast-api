@@ -26,7 +26,7 @@ def test_predict_positive():
         "native-country": "United-States"
     }])
     assert response.status_code == 200
-    assert "predictions" in response.json()
+    assert response.json() == {"predictions": [">50K"]}
 
 def test_predict_negative():
     response = client.post("/predict/", json=[{
@@ -46,4 +46,4 @@ def test_predict_negative():
         "native-country": "United-States"
     }])
     assert response.status_code == 200
-    assert "predictions" in response.json()
+    assert response.json() == {"predictions": ["<=50K"]}

@@ -4,11 +4,17 @@ from main import app
 client = TestClient(app)
 
 def test_read_root():
+    """
+    Test the root endpoint to ensure it returns the welcome message.
+    """
     response = client.get("/")
     assert response.status_code == 200
     assert response.json() == {"message": "Welcome to the Census Income Prediction API"}
 
 def test_predict_positive():
+    """
+    Test an example where the predicted income is greater than 50K.
+    """
     response = client.post("/predict/", json=[{
         "age": 39,
         "workclass": "State-gov",
@@ -29,6 +35,9 @@ def test_predict_positive():
     assert response.json() == {"predictions": [">50K"]}
 
 def test_predict_negative():
+    """
+    Test an example where the predicted income is less than or equal to 50K.
+    """
     response = client.post("/predict/", json=[{
         "age": 50,
         "workclass": "Self-emp-not-inc",

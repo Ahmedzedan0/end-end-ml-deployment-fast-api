@@ -7,6 +7,8 @@ Date: 08-08-2024
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import fbeta_score, precision_score, recall_score
+import numpy as np
+import pandas as pd
 
 class ModelTrainer:
     """
@@ -69,3 +71,45 @@ class ModelTrainer:
             Predictions from the model.
         """
         return self.model.predict(X)
+
+    def compute_slice_performance(self, X, y, feature, encoder, lb, output_file="slice_output.txt"):
+        """
+        Computes and writes model performance metrics for each unique value of a categorical feature.
+
+        Inputs
+        ------
+        X : pd.DataFrame
+            The data to compute metrics on.
+        y : np.array
+            The true labels.
+        feature : str
+            The categorical feature to slice by.
+        encoder : OneHotEncoder
+            The encoder used for categorical features.
+        lb : LabelBinarizer
+            The label binarizer used for the labels.
+        output_file : str
+            The name of the file to write the slice metrics to.
+        """
+        unique_values = X[feature].unique()
+        with open(output_file, "w") as f:
+            for value in unique_values:
+                # Create a slice of data where the feature equals the current value
+                slice_mask = X[feature] == value
+                X_slice = X[slice_mask]
+                y_slice = y[slice_mask]
+
+                # Process the data slice using the existing encoder and label binarizer
+                X_processed, y_processed, _, _ = process_data(
+                    X_slice, categorical_features=[feature], encoder=encoder, lb=lb, training=False
+                )
+
+                # Make predictions
+                preds = self.predict(X_processed)
+
+                # Compute metrics
+                precision, recall, fbeta = self.compute_metrics(y_processed, preds)
+
+                # Write the metrics to the file
+                f.write(f"Performance for {feature} = {value}:\n")
+                f.write(f"Precision: {precision:.4f}, Recall: {recall:.4f}, F-beta: {fbeta:.4f}\n\n")

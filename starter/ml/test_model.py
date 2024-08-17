@@ -1,5 +1,5 @@
 """
-Script Name: test_model.py
+Script Name: starter/ml/test_model.py
 Purpose: This script contains unit tests for the ModelTrainer class, ensuring the correctness of the model training, evaluation, and inference functionalities. It uses pytest fixtures to efficiently manage test data and includes checks to verify that the model has been properly fitted.
 Author: Zidane
 Date: 14-08-2024
@@ -7,8 +7,17 @@ Date: 14-08-2024
 
 import pytest
 import numpy as np
+import os
+import sys
 from sklearn.exceptions import NotFittedError
-from model import ModelTrainer
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, '..'))
+
+try:
+    from .model import ModelTrainer  # Relative import for package execution
+except ImportError:
+    from model import ModelTrainer  # Absolute import for direct execution
 
 @pytest.fixture
 def sample_data():
@@ -35,15 +44,14 @@ def fitted_model(sample_data):
     trainer.train(X_train, y_train)
     return trainer
 
-def test_train_model(fitted_model):
+def test_train_model(fitted_model, sample_data):
     """
     Test whether the model is successfully trained and fitted.
     """
     model = fitted_model.model
     assert model is not None
 
-    # Check if the model is fitted by predicting on the training data
-    X_train, _ = sample_data()
+    X_train, _ = sample_data
     try:
         model.predict(X_train)
     except NotFittedError:

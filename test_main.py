@@ -1,3 +1,9 @@
+"""
+Script Name: test_main.py
+Purpose:
+Author:Zidane
+Date:17-08-2024
+"""
 from fastapi.testclient import TestClient
 from main import app
 

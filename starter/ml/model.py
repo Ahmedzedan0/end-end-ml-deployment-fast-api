@@ -9,6 +9,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import fbeta_score, precision_score, recall_score
 import numpy as np
 import pandas as pd
+from .data import process_data
 
 class ModelTrainer:
     """
@@ -99,10 +100,18 @@ class ModelTrainer:
                 X_slice = X[slice_mask]
                 y_slice = y[slice_mask]
 
+                # Remove the label if still present in X_slice
+                if 'salary' in X_slice.columns:
+                    X_slice = X_slice.drop(columns=['salary'])
+
                 # Process the data slice using the existing encoder and label binarizer
                 X_processed, y_processed, _, _ = process_data(
-                    X_slice, categorical_features=[feature], encoder=encoder, lb=lb, training=False
+                    X_slice, categorical_features=encoder.feature_names_in_, label=None, encoder=encoder, lb=lb, training=False
                 )
+
+                # Check if y_processed is empty
+                if y_processed.size == 0:
+                    continue  # Skip this slice if no labels are present
 
                 # Make predictions
                 preds = self.predict(X_processed)

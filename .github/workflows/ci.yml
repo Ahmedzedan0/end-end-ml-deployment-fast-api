@@ -41,5 +41,5 @@ jobs:
 
     - name: Run pytest
       run: |
-        pytest --maxfail=1 --disable-warnings
+        pytest 
       continue-on-error: false

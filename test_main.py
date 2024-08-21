@@ -1,8 +1,8 @@
 """
 Script Name: test_main.py
 Purpose:
-Author:Zidane
-Date:17-08-2024
+Author: Zidane
+Date: 21-08-2024
 """
 from fastapi.testclient import TestClient
 from main import app
@@ -62,3 +62,29 @@ def test_predict_negative():
     }])
     assert response.status_code == 200
     assert response.json() == {"predictions": ["<=50K"]}
+
+def test_predict_malformed_payload():
+    """
+    Test that the endpoint throws the right exception when passed a malformed payload.
+    """
+    # A payload with missing required fields
+    malformed_payload = [{
+        "age": 50,
+        # Missing 'workclass'
+        "fnlwgt": 83311,
+        "education": "Bachelors",
+        "education-num": 13,
+        # Missing 'marital-status'
+        "occupation": "Exec-managerial",
+        "relationship": "Husband",
+        "race": "White",
+        "sex": "Male",
+        "capital-gain": 0,
+        "capital-loss": 0,
+        "hours-per-week": 13,
+        "native-country": "United-States"
+    }]
+
+    response = client.post("/predict/", json=malformed_payload)
+    assert response.status_code == 422  # Assuming your API returns a 422 Unprocessable Entity for malformed input
+    assert "detail" in response.json()  # Optional: Check for specific error details in the response

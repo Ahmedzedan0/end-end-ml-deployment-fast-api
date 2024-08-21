@@ -1,16 +1,18 @@
 """
 Script Name: live_post.py
-Purpose: Script to send a POST request to the FastAPI endpoints for training and prediction.
+Purpose: Script to send a POST request to the FastAPI endpoints
+for training and prediction.
 Author: Zidane
-Date: 18-08-2024
+Date: 21-08-2024
 """
+
 import requests
 
 # Define the API endpoints
-train_url = "http://127.0.0.1:8000/train/"
-predict_url = "http://127.0.0.1:8000/predict/"
+train_url = "https://end-end-ml-deployment-fast-api-1.onrender.com/train/"
+predict_url = "https://end-end-ml-deployment-fast-api-1.onrender.com/predict/"
 
-# Define the payload with correct field names for prediction
+# Define the payload with the field names for prediction
 payload = [{
     "age": 39,
     "workclass": "State-gov",
@@ -28,7 +30,7 @@ payload = [{
     "native-country": "United-States"
 }]
 
-# Example for training - assuming 'salary' is included in the payload for training
+
 train_payload = [{
     "age": 39,
     "workclass": "State-gov",

@@ -6,4 +6,11 @@ jupyter
 jupyterlab
 fastapi[standard]
 uvicorn[standard]
+fastapi
+uvicorn
 dvc
+httpx
+fastapi
+flake8
+autopep8
+black

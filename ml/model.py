@@ -1,6 +1,7 @@
 """
 Script Name: model.py
-Purpose: This script provides a class-based implementation for training a machine learning model,
+Purpose: This script provides a class-based implementation
+for training a machine learning model,
 evaluating its performance, and making predictions.
 The model used in this script is a RandomForestClassifier from scikit-learn.
 Author: Zidane
@@ -10,14 +11,12 @@ Date: 18-08-2024
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import fbeta_score, precision_score, recall_score
 from sklearn.utils.validation import check_is_fitted, NotFittedError
-import numpy as np
-import pandas as pd
-from .data import process_data  # Adjusted import for process_data
 
 
 class ModelTrainer:
     """
-    A class to encapsulate the machine learning model training, evaluation, and inference process.
+    A class to encapsulate the machine learning model training, evaluation,
+    and inference process.
     """
 
     def __init__(self):
@@ -80,7 +79,8 @@ class ModelTrainer:
         except NotFittedError:
             raise NotFittedError(
                 "The RandomForestClassifier instance is not fitted yet. "
-                "Call 'train' with appropriate arguments before using this method."
+                "Call 'train' with appropriate\
+                    arguments before using this method."
             )
 
         return self.model.predict(X)

@@ -1,6 +1,10 @@
 """
 Script Name: test_model.py
-Purpose: This script contains unit tests for the ModelTrainer class, ensuring the correctness of the model training, evaluation, and inference functionalities. It uses pytest fixtures to efficiently manage test data and includes checks to verify that the model has been properly fitted.
+Purpose: This script contains unit tests for the ModelTrainer class,
+ensuring the correctness of the model training, evaluation,
+and inference functionalities. It uses pytest fixtures to efficiently manage
+test data and includes checks to verify that the
+model has been properly fitted.
 Author: Zidane
 Date: 14-08-2024
 """
@@ -63,7 +67,8 @@ def test_train_model(fitted_model, sample_data):
 
 def test_compute_model_metrics():
     """
-    Test the compute_model_metrics function to ensure correct calculation of precision, recall, and F1 score.
+    Test the compute_model_metrics function to ensure correct calculation of
+    precision, recall, and F1 score.
     """
     y = np.array([1, 0, 1, 0])
     preds = np.array([1, 0, 1, 1])
@@ -76,7 +81,8 @@ def test_compute_model_metrics():
 
 def test_inference(fitted_model, sample_data):
     """
-    Test the inference function to ensure it returns predictions of the correct length.
+    Test the inference function to ensure it returns predictions of
+    the correct length.
     """
     X_test, _ = sample_data
     preds = fitted_model.predict(X_test)

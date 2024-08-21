@@ -1,6 +1,7 @@
 """
 Script Name: main.py
-Purpose: FastAPI application for predicting census income based on demographic data.
+Purpose: FastAPI application for
+predicting census income based on demographic data.
 Author: Zidane
 Date: 21-08-2024
 """
@@ -168,11 +169,8 @@ def train_model(data: List[CensusData]):
         # Train the model
         model_trainer.train(X_train, y_train)
 
-        # Save the trained model (you can add code here to save the model)
-        # ...
-
         return {"message": "Model trained successfully."}
-    except Exception as e:
+    except Exception:
         logger.error(f"Error during training: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail="Training failed.")
 

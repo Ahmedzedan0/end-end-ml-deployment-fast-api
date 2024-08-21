@@ -1,7 +1,9 @@
 """
 Script Name: train_model.py
-Purpose: This script is used to train a machine learning model using the census dataset,
-save the trained model along with the encoder and label binarizer, evaluate the model's performance,
+Purpose: This script is used to train a machine
+learning model using the census dataset,
+save the trained model along with the encoder and label binarizer,
+evaluate the model's performance,
 and compute slice performance metrics.
 Author: Zidane
 Date: 17-08-2024
@@ -59,7 +61,8 @@ def main():
             label="salary",
             training=True)
         logger.info(
-            f"Processed training data shape: {X_train.shape}, Training labels shape: {y_train.shape}"
+            f"Processed training data shape: {X_train.shape},\
+            Training labels shape: {y_train.shape}"
         )
 
         logger.info("Processing test data...")
@@ -72,7 +75,8 @@ def main():
             lb=lb,
         )
         logger.info(
-            f"Processed test data shape: {X_test.shape}, Test labels shape: {y_test.shape}"
+            f"Processed test data shape: {X_test.shape},\
+            Test labels shape: {y_test.shape}"
         )
 
         logger.info("Initializing and training the model...")
@@ -123,7 +127,8 @@ def main():
         preds = loaded_model.predict(X_test)
         precision, recall, fbeta = trainer.compute_metrics(y_test, preds)
         logger.info(
-            f"Evaluation Results - Precision: {precision:.4f}, Recall: {recall:.4f}, F-beta: {fbeta:.4f}"
+            f"Evaluation Results - Precision: {precision:.4f},\
+            Recall: {recall:.4f}, F-beta: {fbeta:.4f}"
         )
 
     except Exception as e:

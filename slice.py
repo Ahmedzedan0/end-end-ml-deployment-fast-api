@@ -10,13 +10,13 @@ import pandas as pd
 import pickle
 from ml.model import ModelTrainer  # Removed compute_metrics import
 from ml.data import process_data
-import sys
 
 
 def compute_slice_metrics(model, encoder, lb, cleaned_df, categorical_features,
                           slice_features):
     """
-    Computes the model metrics for each slice of data that has a particular value for a given feature.
+    Computes the model metrics for each slice of data that has a
+    particular value for a given feature.
     Inputs
     ------
     model: sklearn model
@@ -57,7 +57,8 @@ def compute_slice_metrics(model, encoder, lb, cleaned_df, categorical_features,
         # Use the predict method of ModelTrainer
         preds = trainer.predict(X_slice)
         print(
-            f"shape of preds: {preds.shape} & shape of y_slice: {y_slice.shape}"
+            f"shape of preds: {preds.shape} & shape of y_slice:\
+                {y_slice.shape}"
         )
         precision, recall, fbeta = trainer.compute_metrics(
             y_slice, preds)  # Use compute_metrics from ModelTrainer
@@ -67,7 +68,8 @@ def compute_slice_metrics(model, encoder, lb, cleaned_df, categorical_features,
             "Fbeta": fbeta,
         }
         print(
-            f"Slice metrics for {slice_features} = {value}: {slice_metrics[value]}"
+            f"Slice metrics for {slice_features} = {value}:\
+                {slice_metrics[value]}"
         )
 
     # Write results to slice_output.txt

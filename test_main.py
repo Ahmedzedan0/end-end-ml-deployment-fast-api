@@ -78,7 +78,8 @@ def test_predict_negative():
 
 def test_predict_malformed_payload():
     """
-    Test that the endpoint throws the right exception when passed a malformed payload.
+    Test that the endpoint throws the right
+    exception when passed a malformed payload.
     """
     # A payload with missing required fields
     malformed_payload = [{

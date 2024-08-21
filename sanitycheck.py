@@ -188,6 +188,7 @@ def run_sanity_check(test_dir):
             to ensure you meet the criteria."
     )
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(

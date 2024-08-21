@@ -107,7 +107,8 @@ def run_sanity_check(test_dir):
               "No test cases were detected for the POST() method.")
         print(
             FAIL_COLOR +
-            "Please make sure you have TWO test cases for the POST() method." +
+            "Please make sure you have TWO test cases\
+                for the POST() method." +
             "\nOne test case for EACH of the possible inferences\
                 (results/outputs) of the ML model.\n"
         )
@@ -184,7 +185,6 @@ def run_sanity_check(test_dir):
         "You should still check your work against the rubric\
             to ensure you meet the criteria."
     )
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

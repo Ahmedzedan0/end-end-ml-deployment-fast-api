@@ -15,6 +15,7 @@ from pydantic import BaseModel, Field
 from typing import List
 import pickle
 import pandas as pd
+import traceback
 from sklearn.utils.validation import check_is_fitted, NotFittedError
 
 # Set up logging
@@ -22,8 +23,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Add the current directory to sys.path for module resolution
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                             'starter'))
+sys.path.append(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "starter"))
 
 # Import the required functions from the custom modules
 
@@ -34,6 +35,7 @@ class CensusData(BaseModel):
     """
     Pydantic model for representing census data used in predictions.
     """
+
     age: int
     workclass: str = Field(..., alias="workclass")
     fnlwgt: int
@@ -54,6 +56,7 @@ class CensusData(BaseModel):
         Configuration class for the CensusData model,
         providing an example schema.
         """
+
         json_schema_extra = {
             "example": {
                 "age": 39,
@@ -69,7 +72,7 @@ class CensusData(BaseModel):
                 "capital-gain": 2174,
                 "capital-loss": 0,
                 "hours-per-week": 40,
-                "native-country": "United-States"
+                "native-country": "United-States",
             }
         }
 
@@ -78,19 +81,19 @@ class CensusData(BaseModel):
 async def startup_event():
     global model, encoder, lb, model_trainer
     try:
-        model_path = os.path.join(
-            os.path.dirname(__file__), "model/random_forest_model.pkl")
-        encoder_path = os.path.join(
-            os.path.dirname(__file__), "model/encoder.pkl")
+        model_path = os.path.join(os.path.dirname(__file__),
+                                  "model/random_forest_model.pkl")
+        encoder_path = os.path.join(os.path.dirname(__file__),
+                                    "model/encoder.pkl")
         lb_path = os.path.join(os.path.dirname(__file__), "model/lb.pkl")
 
-        with open(model_path, 'rb') as model_file:
+        with open(model_path, "rb") as model_file:
             model = pickle.load(model_file)
 
-        with open(encoder_path, 'rb') as encoder_file:
+        with open(encoder_path, "rb") as encoder_file:
             encoder = pickle.load(encoder_file)
 
-        with open(lb_path, 'rb') as lb_file:
+        with open(lb_path, "rb") as lb_file:
             lb = pickle.load(lb_file)
 
         logger.info("Model, encoder, and label binarizer loaded successfully.")
@@ -104,11 +107,10 @@ async def startup_event():
             check_is_fitted(model_trainer.model)
             logger.info("Model is fitted and ready for predictions.")
         except NotFittedError:
-            logger.error(
-                "The model is not fitted.\
+            logger.error("The model is not fitted.\
                     Ensure the model is properly trained and saved.")
-            raise HTTPException(
-                status_code=500, detail="Loaded model is not fitted.")
+            raise HTTPException(status_code=500,
+                                detail="Loaded model is not fitted.")
 
     except Exception as e:
         logger.error(f"Failed to load model or preprocessing files: {e}")
@@ -134,8 +136,14 @@ def train_model(data: List[CensusData]):
         logger.info(f"Input data received for training: {df.head()}")
 
         cat_features = [
-            "workclass", "education", "marital-status", "occupation",
-            "relationship", "race", "sex", "native-country"
+            "workclass",
+            "education",
+            "marital-status",
+            "occupation",
+            "relationship",
+            "race",
+            "sex",
+            "native-country",
         ]
         label = "salary"
 
@@ -149,8 +157,13 @@ def train_model(data: List[CensusData]):
         logger.info(f"Label column '{label}' data: {df[label].head()}")
 
         X_train, y_train, _, _ = process_data(
-            df, categorical_features=cat_features,
-            label=label, training=True, encoder=None, lb=None)
+            df,
+            categorical_features=cat_features,
+            label=label,
+            training=True,
+            encoder=None,
+            lb=None,
+        )
 
         # Train the model
         model_trainer.train(X_train, y_train)
@@ -173,19 +186,30 @@ def predict(data: List[CensusData]):
         logger.info(f"Input data received for prediction: {df.head()}")
 
         cat_features = [
-            "workclass", "education", "marital-status", "occupation",
-            "relationship", "race", "sex", "native-country"
+            "workclass",
+            "education",
+            "marital-status",
+            "occupation",
+            "relationship",
+            "race",
+            "sex",
+            "native-country",
         ]
 
-        X, _, _, _ = process_data(df, categorical_features=cat_features,
-                                  training=False, encoder=encoder, lb=lb)
+        X, _, _, _ = process_data(
+            df,
+            categorical_features=cat_features,
+            training=False,
+            encoder=encoder,
+            lb=lb,
+        )
 
         logger.info(f"Processed data: {X}")
 
         if X is None or X.shape[0] == 0:
             logger.error("Processed data is empty or invalid.")
-            raise HTTPException(
-                status_code=400, detail="Processed data is empty or invalid.")
+            raise HTTPException(status_code=400,
+                                detail="Processed data is empty or invalid.")
 
         preds = model_trainer.predict(X)
 
@@ -202,6 +226,6 @@ def predict(data: List[CensusData]):
         logger.info(f"Prediction successful: {predictions.tolist()}")
 
         return {"predictions": predictions.tolist()}
-    except Exception as e:
+    except Exception:
         logger.error(f"Error during prediction: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail="Prediction failed.")

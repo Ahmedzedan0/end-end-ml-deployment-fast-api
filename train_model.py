@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 def main():
     try:
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        sys.path.append(os.path.join(current_dir, '..'))
+        sys.path.append(os.path.join(current_dir, ".."))
 
         from ml.data import process_data
 
@@ -54,15 +54,26 @@ def main():
 
         logger.info("Processing training data...")
         X_train, y_train, encoder, lb = process_data(
-            train, categorical_features=cat_features, label="salary", training=True)
+            train,
+            categorical_features=cat_features,
+            label="salary",
+            training=True)
         logger.info(
-            f"Processed training data shape: {X_train.shape}, Training labels shape: {y_train.shape}")
+            f"Processed training data shape: {X_train.shape}, Training labels shape: {y_train.shape}"
+        )
 
         logger.info("Processing test data...")
         X_test, y_test, _, _ = process_data(
-            test, categorical_features=cat_features, label="salary", training=False, encoder=encoder, lb=lb)
+            test,
+            categorical_features=cat_features,
+            label="salary",
+            training=False,
+            encoder=encoder,
+            lb=lb,
+        )
         logger.info(
-            f"Processed test data shape: {X_test.shape}, Test labels shape: {y_test.shape}")
+            f"Processed test data shape: {X_test.shape}, Test labels shape: {y_test.shape}"
+        )
 
         logger.info("Initializing and training the model...")
         trainer = ModelTrainer()
@@ -77,44 +88,43 @@ def main():
         lb_path = os.path.join(model_dir, "lb.pkl")
 
         logger.info(f"Saving model to {model_path}")
-        with open(model_path, 'wb') as model_file:
+        with open(model_path, "wb") as model_file:
             pickle.dump(trainer.model, model_file)
 
         logger.info(f"Saving encoder to {encoder_path}")
-        with open(encoder_path, 'wb') as encoder_file:
+        with open(encoder_path, "wb") as encoder_file:
             pickle.dump(encoder, encoder_file)
 
         logger.info(f"Saving label binarizer to {lb_path}")
-        with open(lb_path, 'wb') as lb_file:
+        with open(lb_path, "wb") as lb_file:
             pickle.dump(lb, lb_file)
 
         logger.info("Model, encoder, and label binarizer saved successfully.")
 
         # Track the files with DVC
         logger.info("Tracking the saved files with DVC...")
-        os.system(f'dvc add {model_path}')
-        os.system(f'dvc add {encoder_path}')
-        os.system(f'dvc add {lb_path}')
+        os.system(f"dvc add {model_path}")
+        os.system(f"dvc add {encoder_path}")
+        os.system(f"dvc add {lb_path}")
         logger.info("Files tracked with DVC successfully.")
 
         # Validate the saved model
         try:
-            with open(model_path, 'rb') as model_file:
+            with open(model_path, "rb") as model_file:
                 loaded_model = pickle.load(model_file)
-            logger.info(
-                "Model loaded successfully from %s for validation.",
-                model_path)
+            logger.info("Model loaded successfully from %s for validation.",
+                        model_path)
         except Exception as e:
-            logger.error(
-                "Failed to load the saved model for validation: %s",
-                str(e))
+            logger.error("Failed to load the saved model for validation: %s",
+                         str(e))
             sys.exit(1)
 
         # Evaluate the model
         preds = loaded_model.predict(X_test)
         precision, recall, fbeta = trainer.compute_metrics(y_test, preds)
         logger.info(
-            f"Evaluation Results - Precision: {precision:.4f}, Recall: {recall:.4f}, F-beta: {fbeta:.4f}")
+            f"Evaluation Results - Precision: {precision:.4f}, Recall: {recall:.4f}, F-beta: {fbeta:.4f}"
+        )
 
     except Exception as e:
         logger.error(f"An error occurred: {e}")

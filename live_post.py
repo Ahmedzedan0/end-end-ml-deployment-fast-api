@@ -27,9 +27,8 @@ payload = [{
     "capital-gain": 2174,
     "capital-loss": 0,
     "hours-per-week": 40,
-    "native-country": "United-States"
+    "native-country": "United-States",
 }]
-
 
 train_payload = [{
     "age": 39,
@@ -46,7 +45,7 @@ train_payload = [{
     "capital-loss": 0,
     "hours-per-week": 40,
     "native-country": "United-States",
-    "salary": ">50K"  # Include the label for training
+    "salary": ">50K",  # Include the label for training
 }]
 
 # Uncomment this section if you need to train the model
@@ -63,7 +62,8 @@ response = requests.post(predict_url, json=payload)
 # Print the status code
 print(f"Prediction Status Code: {response.status_code}")
 
-# Try to print the response JSON, or print the raw response if JSON decoding fails
+# Try to print the response JSON, or print the raw response if JSON
+# decoding fails
 try:
     print("Prediction Response JSON:", response.json())
 except requests.exceptions.JSONDecodeError:

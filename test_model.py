@@ -12,7 +12,7 @@ import sys
 from sklearn.exceptions import NotFittedError
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(current_dir, '..'))
+sys.path.append(os.path.join(current_dir, ".."))
 
 try:
     from ml.model import ModelTrainer  # Adjusted path

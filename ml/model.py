@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 from .data import process_data  # Adjusted import for process_data
 
+
 class ModelTrainer:
     """
     A class to encapsulate the machine learning model training, evaluation, and inference process.
@@ -37,7 +38,6 @@ class ModelTrainer:
             Labels.
         """
         self.model.fit(X_train, y_train)
-
 
     def compute_metrics(self, y_true, y_pred):
         """
@@ -78,7 +78,9 @@ class ModelTrainer:
         try:
             check_is_fitted(self.model)
         except NotFittedError:
-            raise NotFittedError("The RandomForestClassifier instance is not fitted yet. "
-                                 "Call 'train' with appropriate arguments before using this method.")
+            raise NotFittedError(
+                "The RandomForestClassifier instance is not fitted yet. "
+                "Call 'train' with appropriate arguments before using this method."
+            )
 
         return self.model.predict(X)

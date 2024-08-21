@@ -82,7 +82,8 @@ def run_sanity_check(test_dir):
             WARNING_COUNT += 1
             print(
                 FAIL_COLOR +
-                "Your test case for GET() does not seem to be testing the\
+                "Your test case for GET()\
+                    does not seem to be testing the\
                     response code.\n"
             )
 
@@ -152,7 +153,8 @@ def run_sanity_check(test_dir):
             print(
                 FAIL_COLOR +
                 "One or more of your test cases for POST()\
-                    do not seem to be testing the contents of the response.\n"
+                    do not seem to be testing the contents\
+                        of the response.\n"
             )
 
         if (len(test_functions_for_post) >= 2

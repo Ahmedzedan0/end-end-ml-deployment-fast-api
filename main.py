@@ -1,7 +1,7 @@
 """
 Script Name: main.py
-Purpose: FastAPI application for
-predicting census income based on demographic data.
+Purpose: FastAPI application for predicting census income based
+on demographic data.
 Author: Zidane
 Date: 21-08-2024
 """
@@ -27,10 +27,13 @@ logger = logging.getLogger(__name__)
 sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "starter"))
 
-# Import the required functions from the custom modules
-
 app = FastAPI()
 
+# Declare global variables
+model = None
+encoder = None
+lb = None
+model_trainer = None
 
 class CensusData(BaseModel):
     """
@@ -54,8 +57,7 @@ class CensusData(BaseModel):
 
     class Config:
         """
-        Configuration class for the CensusData model,
-        providing an example schema.
+        Configuration class for the CensusData model, providing an example schema.
         """
 
         json_schema_extra = {
@@ -77,48 +79,55 @@ class CensusData(BaseModel):
             }
         }
 
-
 @app.on_event("startup")
 async def startup_event():
     global model, encoder, lb, model_trainer
     try:
-        model_path = os.path.join(os.path.dirname(__file__),
-                                  "model/random_forest_model.pkl")
-        encoder_path = os.path.join(os.path.dirname(__file__),
-                                    "model/encoder.pkl")
+        model_path = os.path.join(os.path.dirname(__file__), "model/random_forest_model.pkl")
+        encoder_path = os.path.join(os.path.dirname(__file__), "model/encoder.pkl")
         lb_path = os.path.join(os.path.dirname(__file__), "model/lb.pkl")
 
+        # Check if all necessary files exist
+        if not os.path.exists(model_path) or not os.path.exists(encoder_path) or not os.path.exists(lb_path):
+            logger.error("Model, encoder, or label binarizer files are missing.")
+            raise HTTPException(status_code=500, detail="Necessary files are missing.")
+
+        # Load model
         with open(model_path, "rb") as model_file:
             model = pickle.load(model_file)
+            logger.info("Model loaded successfully.")
 
+        # Load encoder and validate it
         with open(encoder_path, "rb") as encoder_file:
             encoder = pickle.load(encoder_file)
+            logger.info("Encoder loaded successfully.")
+            
+            # Test encoder
+            try:
+                test_data = [['Private']]  # Test with a valid category
+                encoder.transform(test_data)
+                logger.info("Encoder test passed.")
+            except Exception as e:
+                logger.error(f"Encoder test failed: {e}")
+                raise HTTPException(status_code=500, detail="Encoder test failed.")
 
+        # Load label binarizer
         with open(lb_path, "rb") as lb_file:
             lb = pickle.load(lb_file)
+            logger.info("Label binarizer loaded successfully.")
 
-        logger.info("Model, encoder, and label binarizer loaded successfully.")
-
-        # Instantiate the ModelTrainer class and set the loaded model
+        # Initialize ModelTrainer and validate model
         model_trainer = ModelTrainer()
         model_trainer.model = model
-
-        # Check if the model is fitted
         try:
             check_is_fitted(model_trainer.model)
             logger.info("Model is fitted and ready for predictions.")
         except NotFittedError:
-            logger.error("The model is not fitted.\
-                    Ensure the model is properly trained and saved.")
-            raise HTTPException(status_code=500,
-                                detail="Loaded model is not fitted.")
-
+            logger.error("The model is not fitted.")
+            raise HTTPException(status_code=500, detail="Loaded model is not fitted.")
     except Exception as e:
-        logger.error(f"Failed to load model or preprocessing files: {e}")
-        raise HTTPException(
-            status_code=500,
-            detail="Model or preprocessing file loading failed.")
-
+        logger.error(f"Failed to initialize application: {e}")
+        raise HTTPException(status_code=500, detail="Application startup failed.")
 
 @app.get("/")
 def read_root():
@@ -127,9 +136,8 @@ def read_root():
     """
     return {"message": "Welcome to the Census Income Prediction API"}
 
-
 @app.post("/train/")
-def train_model(data: List[CensusData]):
+def train_model(data: List[CensusData]) -> dict:
     try:
         input_data = [d.dict(by_alias=True) for d in data]
         df = pd.DataFrame(input_data)
@@ -150,10 +158,8 @@ def train_model(data: List[CensusData]):
 
         # Verify that the label column exists and has data
         if label not in df.columns:
-            logger.error(
-                f"The label column '{label}' is not found in the DataFrame.")
-            raise ValueError(
-                f"Label column '{label}' is missing from the input data.")
+            logger.error(f"The label column '{label}' is not found in the DataFrame.")
+            raise ValueError(f"Label column '{label}' is missing from the input data.")
 
         logger.info(f"Label column '{label}' data: {df[label].head()}")
 
@@ -174,10 +180,13 @@ def train_model(data: List[CensusData]):
         logger.error(f"Error during training: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail="Training failed.")
 
-
 @app.post("/predict/")
-def predict(data: List[CensusData]):
+def predict(data: List[CensusData]) -> dict:
     try:
+        if encoder is None:
+            logger.error("Encoder is not loaded.")
+            raise HTTPException(status_code=500, detail="Model encoder is not available.")
+
         input_data = [d.dict(by_alias=True) for d in data]
         df = pd.DataFrame(input_data)
 
@@ -206,8 +215,7 @@ def predict(data: List[CensusData]):
 
         if X is None or X.shape[0] == 0:
             logger.error("Processed data is empty or invalid.")
-            raise HTTPException(status_code=400,
-                                detail="Processed data is empty or invalid.")
+            raise HTTPException(status_code=400, detail="Processed data is empty or invalid.")
 
         preds = model_trainer.predict(X)
 
@@ -215,9 +223,7 @@ def predict(data: List[CensusData]):
 
         if preds is None or preds.size == 0:
             logger.error("No predictions were made.")
-            raise HTTPException(
-                status_code=500,
-                detail="Prediction failed, no output produced.")
+            raise HTTPException(status_code=500, detail="Prediction failed, no output produced.")
 
         predictions = lb.inverse_transform(preds)
 

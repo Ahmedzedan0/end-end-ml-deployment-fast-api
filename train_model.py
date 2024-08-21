@@ -52,7 +52,8 @@ def main():
         logger.info("Splitting data into train and test sets...")
         train, test = train_test_split(data, test_size=0.20)
         logger.info(
-            f"Training set shape: {train.shape}, Test set shape: {test.shape}")
+            f"Training set shape: {train.shape},\
+                Test set shape: {test.shape}")
 
         logger.info("Processing training data...")
         X_train, y_train, encoder, lb = process_data(
@@ -103,7 +104,8 @@ def main():
         with open(lb_path, "wb") as lb_file:
             pickle.dump(lb, lb_file)
 
-        logger.info("Model, encoder, and label binarizer saved successfully.")
+        logger.info("Model, encoder,\
+            and label binarizer saved successfully.")
 
         # Track the files with DVC
         logger.info("Tracking the saved files with DVC...")

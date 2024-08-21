@@ -1,7 +1,6 @@
 """
 Script Name: main.py
-Purpose: FastAPI application for predicting
-census income based on demographic data.
+Purpose: FastAPI application for predicting census income based on demographic data.
 Author: Zidane
 Date: 21-08-2024
 """
@@ -13,7 +12,6 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from typing import List
 import pickle
-import traceback
 import pandas as pd
 from sklearn.utils.validation import check_is_fitted, NotFittedError
 
@@ -30,6 +28,7 @@ from ml.data import process_data
 from ml.model import ModelTrainer
 
 app = FastAPI()
+
 
 class CensusData(BaseModel):
     """
@@ -74,46 +73,49 @@ class CensusData(BaseModel):
             }
         }
 
+
 @app.on_event("startup")
 async def startup_event():
     global model, encoder, lb, model_trainer
     try:
-        model_path = os.path.join(os.path.dirname(__file__),
-                                  "model/random_forest_model.pkl")
-        encoder_path = os.path.join(os.path.dirname(__file__),
-                                    "model/encoder.pkl")
-        lb_path = os.path.join(os.path.dirname(__file__),
-                               "model/lb.pkl")
-        
+        model_path = os.path.join(
+            os.path.dirname(__file__), "model/random_forest_model.pkl")
+        encoder_path = os.path.join(
+            os.path.dirname(__file__), "model/encoder.pkl")
+        lb_path = os.path.join(os.path.dirname(__file__), "model/lb.pkl")
+
         with open(model_path, 'rb') as model_file:
             model = pickle.load(model_file)
-        
+
         with open(encoder_path, 'rb') as encoder_file:
             encoder = pickle.load(encoder_file)
-        
+
         with open(lb_path, 'rb') as lb_file:
             lb = pickle.load(lb_file)
 
         logger.info("Model, encoder, and label binarizer loaded successfully.")
-        
+
         # Instantiate the ModelTrainer class and set the loaded model
         model_trainer = ModelTrainer()
         model_trainer.model = model  
-        
+
         # Check if the model is fitted
         try:
             check_is_fitted(model_trainer.model)
             logger.info("Model is fitted and ready for predictions.")
         except NotFittedError:
-            logger.error("The model is not fitted.\
-                Ensure the model is properly trained and saved.")
-            raise HTTPException(status_code=500,
-                                detail="Loaded model is not fitted.")
+            logger.error(
+                "The model is not fitted.\
+                    Ensure the model is properly trained and saved.")
+            raise HTTPException(
+                status_code=500, detail="Loaded model is not fitted.")
 
     except Exception as e:
         logger.error(f"Failed to load model or preprocessing files: {e}")
-        raise HTTPException(status_code=500,
-                        detail="Model or preprocessing file loading failed.")
+        raise HTTPException(
+            status_code=500,
+            detail="Model or preprocessing file loading failed.")
+
 
 @app.get("/")
 def read_root():
@@ -121,6 +123,7 @@ def read_root():
     Root endpoint that returns a welcome message.
     """
     return {"message": "Welcome to the Census Income Prediction API"}
+
 
 @app.post("/train/")
 def train_model(data: List[CensusData]):
@@ -138,18 +141,17 @@ def train_model(data: List[CensusData]):
 
         # Verify that the label column exists and has data
         if label not in df.columns:
-            logger.error(f"The label column '{label}' \
-                is not found in the DataFrame.")
-            raise ValueError(f"Label column '{label}' \
-                is missing from the input data.")
+            logger.error(
+                f"The label column '{label}' is not found in the DataFrame.")
+            raise ValueError(
+                f"Label column '{label}' is missing from the input data.")
 
         logger.info(f"Label column '{label}' data: {df[label].head()}")
 
-        X_train, y_train, _, _ = process_data(df,
-                                            categorical_features=cat_features,
-                                            label=label, training=True,
-                                            encoder=None, lb=None)
-        
+        X_train, y_train, _, _ = process_data(
+            df, categorical_features=cat_features,
+            label=label, training=True, encoder=None, lb=None)
+
         # Train the model
         model_trainer.train(X_train, y_train)
 
@@ -160,6 +162,7 @@ def train_model(data: List[CensusData]):
     except Exception as e:
         logger.error(f"Error during training: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail="Training failed.")
+
 
 @app.post("/predict/")
 def predict(data: List[CensusData]):
@@ -173,25 +176,26 @@ def predict(data: List[CensusData]):
             "workclass", "education", "marital-status", "occupation",
             "relationship", "race", "sex", "native-country"
         ]
-        
+
         X, _, _, _ = process_data(df, categorical_features=cat_features,
                                   training=False, encoder=encoder, lb=lb)
-        
+
         logger.info(f"Processed data: {X}")
 
         if X is None or X.shape[0] == 0:
             logger.error("Processed data is empty or invalid.")
-            raise HTTPException(status_code=400,
-                                detail="Processed data is empty or invalid.")
+            raise HTTPException(
+                status_code=400, detail="Processed data is empty or invalid.")
 
         preds = model_trainer.predict(X)
-        
+
         logger.info(f"Raw predictions: {preds}")
 
         if preds is None or preds.size == 0:
             logger.error("No predictions were made.")
-            raise HTTPException(status_code=500,
-                            detail="Prediction failed, no output produced.")
+            raise HTTPException(
+                status_code=500,
+                detail="Prediction failed, no output produced.")
 
         predictions = lb.inverse_transform(preds)
 

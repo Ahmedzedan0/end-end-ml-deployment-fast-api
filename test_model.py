@@ -19,6 +19,7 @@ try:
 except ImportError:
     from model import ModelTrainer  # Alternative import
 
+
 @pytest.fixture
 def sample_data():
     """
@@ -34,6 +35,7 @@ def sample_data():
     y_train = np.array([1, 0, 1, 0])
     return X_train, y_train
 
+
 @pytest.fixture
 def fitted_model(sample_data):
     """
@@ -43,6 +45,7 @@ def fitted_model(sample_data):
     trainer = ModelTrainer()
     trainer.train(X_train, y_train)
     return trainer
+
 
 def test_train_model(fitted_model, sample_data):
     """
@@ -57,6 +60,7 @@ def test_train_model(fitted_model, sample_data):
     except NotFittedError:
         pytest.fail("Model is not fitted")
 
+
 def test_compute_model_metrics():
     """
     Test the compute_model_metrics function to ensure correct calculation of precision, recall, and F1 score.
@@ -68,6 +72,7 @@ def test_compute_model_metrics():
     assert precision == 0.6666666666666666
     assert recall == 1.0
     assert fbeta == 0.8
+
 
 def test_inference(fitted_model, sample_data):
     """

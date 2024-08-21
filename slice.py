@@ -11,7 +11,14 @@ from ml.model import ModelTrainer  # Removed compute_metrics import
 from ml.data import process_data
 import sys
 
-def compute_slice_metrics(model, encoder, lb, cleaned_df, categorical_features, slice_features):
+
+def compute_slice_metrics(
+        model,
+        encoder,
+        lb,
+        cleaned_df,
+        categorical_features,
+        slice_features):
     """
     Computes the model metrics for each slice of data that has a particular value for a given feature.
     Inputs
@@ -41,16 +48,20 @@ def compute_slice_metrics(model, encoder, lb, cleaned_df, categorical_features, 
     cleaned_df.columns = cleaned_df.columns.str.strip()
 
     for value in cleaned_df[slice_features].unique():
-        
+
         X_slice = cleaned_df[cleaned_df[slice_features] == value]
         X_slice, y_slice, _, _ = process_data(
             X_slice, categorical_features, label="salary", training=False, encoder=encoder, lb=lb)
-        preds = trainer.predict(X_slice)  # Use the predict method of ModelTrainer
-        print(f"shape of preds: {preds.shape} & shape of y_slice: {y_slice.shape}")
-        precision, recall, fbeta = trainer.compute_metrics(y_slice, preds)  # Use compute_metrics from ModelTrainer
+        # Use the predict method of ModelTrainer
+        preds = trainer.predict(X_slice)
+        print(
+            f"shape of preds: {preds.shape} & shape of y_slice: {y_slice.shape}")
+        precision, recall, fbeta = trainer.compute_metrics(
+            y_slice, preds)  # Use compute_metrics from ModelTrainer
         slice_metrics[value] = {'Precision': precision,
                                 'Recall': recall, 'Fbeta': fbeta}
-        print(f"Slice metrics for {slice_features} = {value}: {slice_metrics[value]}")
+        print(
+            f"Slice metrics for {slice_features} = {value}: {slice_metrics[value]}")
 
     # Write results to slice_output.txt
     with open('slice_output.txt', 'w') as f:

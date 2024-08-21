@@ -5,6 +5,8 @@ Author: Zidane
 Date: 21-08-2024
 """
 
+from ml.model import ModelTrainer
+from ml.data import process_data
 import os
 import sys
 import logging
@@ -24,8 +26,6 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                              'starter'))
 
 # Import the required functions from the custom modules
-from ml.data import process_data
-from ml.model import ModelTrainer
 
 app = FastAPI()
 
@@ -97,7 +97,7 @@ async def startup_event():
 
         # Instantiate the ModelTrainer class and set the loaded model
         model_trainer = ModelTrainer()
-        model_trainer.model = model  
+        model_trainer.model = model
 
         # Check if the model is fitted
         try:

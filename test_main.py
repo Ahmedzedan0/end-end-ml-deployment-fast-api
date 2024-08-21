@@ -9,13 +9,16 @@ from main import app
 
 client = TestClient(app)
 
+
 def test_read_root():
     """
     Test the root endpoint to ensure it returns the welcome message.
     """
     response = client.get("/")
     assert response.status_code == 200
-    assert response.json() == {"message": "Welcome to the Census Income Prediction API"}
+    assert response.json() == {
+        "message": "Welcome to the Census Income Prediction API"}
+
 
 def test_predict_positive():
     """
@@ -40,6 +43,7 @@ def test_predict_positive():
     assert response.status_code == 200
     assert response.json() == {"predictions": [">50K"]}
 
+
 def test_predict_negative():
     """
     Test an example where the predicted income is less than or equal to 50K.
@@ -62,6 +66,7 @@ def test_predict_negative():
     }])
     assert response.status_code == 200
     assert response.json() == {"predictions": ["<=50K"]}
+
 
 def test_predict_malformed_payload():
     """
@@ -86,5 +91,7 @@ def test_predict_malformed_payload():
     }]
 
     response = client.post("/predict/", json=malformed_payload)
-    assert response.status_code == 422  # Assuming your API returns a 422 Unprocessable Entity for malformed input
-    assert "detail" in response.json()  # Optional: Check for specific error details in the response
+    # Assuming your API returns a 422 Unprocessable Entity for malformed input
+    assert response.status_code == 422
+    # Optional: Check for specific error details in the response
+    assert "detail" in response.json()
